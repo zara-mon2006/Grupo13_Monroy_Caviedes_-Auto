@@ -1,0 +1,589 @@
+{
+  "name": "FLUJO DE DATOS 1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/notify",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "f46df0c0-1790-4ab2-bab0-4f867b4196bf",
+      "name": "Webhook",
+      "webhookId": "2ea95433-9da1-4331-9513-4ac9d21e016e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8cac0c5f-1a21-47a8-89ff-1b5cae2694bc",
+              "leftValue": "={{ $json.body.email }}",
+              "rightValue": "^[a-zA-Z0-9_%.+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9151691a-2ab6-4c5d-862e-7607e6d4401e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "=Nueva Solicitud de Contacto - {{ $('Webhook').item.json.body.nombre }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n    <meta charset=\"UTF-8\">\n    <style>\n        body { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }\n        .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; }\n        .header { background: linear-gradient(135deg, #1a2f4b 0%, #2d5a8a 100%); color: white; padding: 30px; }\n        .header h2 { margin: 0; font-size: 24px; }\n        .content { padding: 30px; }\n        .field { margin-bottom: 20px; }\n        .label { color: #2d5a8a; font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }\n        .value { color: #333; font-size: 15px; line-height: 1.6; padding: 10px; background: #f9f9f9; border-left: 3px solid #00d4ff; }\n        .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #ddd; }\n        .id-badge { display: inline-block; background: #00d4ff; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; margin-top: 10px; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h2>✉️ Nueva Solicitud de Contacto Recibida</h2>\n            <p>Hemos recibido tu mensaje. Nos pondremos en contacto pronto.</p>\n        </div>\n        \n        <div class=\"content\">\n            <div class=\"field\">\n                <div class=\"label\">👤 Nombre Completo</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.nombre }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">📧 Email</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.email }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">🏢 Empresa</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.empresa }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">📱 Teléfono</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.telefono }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">🎯 Asunto</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.asunto }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">💬 Mensaje</div>\n                <div class=\"value\" style=\"white-space: pre-wrap;\">{{ $('Webhook').item.json.body.mensaje }}</div>\n            </div>\n\n            <div class=\"field\">\n                <div class=\"label\">⚡ Prioridad</div>\n                <div class=\"value\">{{ $('Webhook').item.json.body.prioridad }}</div>\n            </div>\n\n            <hr style=\"border: none; border-top: 1px solid #ddd; margin: 30px 0;\">\n\n            <div style=\"background: #f0f7ff; padding: 15px; border-radius: 5px; font-size: 12px; color: #2d5a8a;\">\n                <strong>🔍 Detalles del Sistema:</strong><br>\n                ID de Solicitud: {{ $json.id_solicitud }}<br>\n                Fecha/Hora: {{ $now.toFormat('dd/MM/yyyy HH:mm:ss') }}<br>\n                Estado: {{ $json.estado }}<br>\n                Asignado a: {{ $json.asignado_a }}\n            </div>\n        </div>\n\n        <div class=\"footer\">\n            <p>Este es un email automático del sistema de contacto. Por favor no respondas a este correo. Usa el formulario web para enviar mensajes adicionales.</p>\n            <p><strong>Corporación Universitaria de Huila - Ingeniería Mecatrónica</strong></p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        -176
+      ],
+      "id": "84252113-5783-43e3-af37-b67d42cad030",
+      "name": "Send a message",
+      "webhookId": "c9759f40-91ce-4760-9a88-81527717da90",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "61ignWaxgvID2LZb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "action": "generate",
+        "dataPropertyName": "id_solicitud"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -128
+      ],
+      "id": "c2d1a61f-5f2b-4f30-9744-620b1255bfe7",
+      "name": "Crypto"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "996743ba-f653-48f6-b29e-f2522b31a8cf",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "671c7851-00a6-4ed7-934b-373d72782120",
+              "name": "id_solicitud",
+              "value": "={{ $node[\"Crypto\"].json.id_solicitud }}",
+              "type": "string"
+            },
+            {
+              "id": "6fabf90e-66dd-4ded-827a-58451cd76428",
+              "name": "estado",
+              "value": "\"NUEVO\"",
+              "type": "string"
+            },
+            {
+              "id": "36942cfd-420a-414f-b272-9a1ce90bd081",
+              "name": "asignado_a",
+              "value": "\"Soporte Técnico\"",
+              "type": "string"
+            },
+            {
+              "id": "ce487c32-92d0-4830-a824-14f43990be0c",
+              "name": "origen_sistema",
+              "value": "\"Formulario Web - Sistema n8n\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        -128
+      ],
+      "id": "4f346c8b-4dd8-414d-9623-6e29922b3018",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI",
+          "mode": "list",
+          "cachedResultName": "TRABAJO 2 AUTO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1301926316,
+          "mode": "list",
+          "cachedResultName": "Hoja2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI/edit#gid=1301926316"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Crypto1').item.json.id_solicitud }}",
+            "MENSAJE": "={{ $('Webhook').item.json.body.mensaje }}",
+            "PRIORIDAD": "={{ $('Webhook').item.json.body.prioridad }}",
+            "FECHA/HORA": "={{ $('Webhook').item.json.body['fecha/hora'] }}",
+            "ASIGNADO": "={{ $('Webhook').item.json.body['asignado a'] }}",
+            "NOMBRE": "={{ $('Webhook').item.json.body.nombre }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NOMBRE",
+              "displayName": "NOMBRE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MENSAJE",
+              "displayName": "MENSAJE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRIORIDAD",
+              "displayName": "PRIORIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FECHA/HORA",
+              "displayName": "FECHA/HORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASIGNADO",
+              "displayName": "ASIGNADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        112
+      ],
+      "id": "7bb8dc58-7f79-4166-892c-b794df2b1d09",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "huGMi175XALmJYbi",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI",
+          "mode": "list",
+          "cachedResultName": "TRABAJO 2 AUTO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L11qpP0AkVFL3x3UR8t6PVQZwS-csb84BY3vEZNFjHI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "EMAIL": "={{ $('Webhook').item.json.body.email }}",
+            "NOMBRE": "={{ $('Webhook').item.json.body.nombre }}",
+            "EMPRESA": "={{ $('Webhook').item.json.body.empresa }}",
+            "TELEFENO": "={{ $json.telefono_para_sheets }}",
+            "ASUNTO": "={{ $('Webhook').item.json.body.asunto }}",
+            "MENSAJE": "={{ $('Webhook').item.json.body.mensaje }}",
+            "PRIORIDAD": "={{ $('Webhook').item.json.body.prioridad }}",
+            "ID": "={{ $('Crypto').item.json.id_solicitud }}",
+            "FECHA/HORA": "={{ $('Webhook').item.json.body['fecha/hora'] }}",
+            "ESTADO": "={{ $('Webhook').item.json.body.estado }}",
+            "ASIGNADO A": "={{ $('Webhook').item.json.body['asignado a'] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "NOMBRE",
+              "displayName": "NOMBRE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "displayName": "EMAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMPRESA",
+              "displayName": "EMPRESA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TELEFENO",
+              "displayName": "TELEFENO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASUNTO",
+              "displayName": "ASUNTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MENSAJE",
+              "displayName": "MENSAJE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRIORIDAD",
+              "displayName": "PRIORIDAD",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FECHA/HORA",
+              "displayName": "FECHA/HORA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ESTADO",
+              "displayName": "ESTADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ASIGNADO A",
+              "displayName": "ASIGNADO A",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1376,
+        -192
+      ],
+      "id": "4a397e67-f898-4259-bf17-368dc339f064",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "huGMi175XALmJYbi",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "action": "generate",
+        "dataPropertyName": "id_solicitud"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        368,
+        112
+      ],
+      "id": "362f8f3f-5c90-43d9-a1eb-c924fe60cf7f",
+      "name": "Crypto1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "996743ba-f653-48f6-b29e-f2522b31a8cf",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "671c7851-00a6-4ed7-934b-373d72782120",
+              "name": "id_solicitud",
+              "value": "={{ $json.id_solicitud }}",
+              "type": "string"
+            },
+            {
+              "id": "6fabf90e-66dd-4ded-827a-58451cd76428",
+              "name": "estado",
+              "value": "\"NUEVO\"",
+              "type": "string"
+            },
+            {
+              "id": "36942cfd-420a-414f-b272-9a1ce90bd081",
+              "name": "asignado_a",
+              "value": "\"Soporte Técnico\"",
+              "type": "string"
+            },
+            {
+              "id": "ce487c32-92d0-4830-a824-14f43990be0c",
+              "name": "origen_sistema",
+              "value": "\"Formulario Web - Sistema n8n\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        112
+      ],
+      "id": "18f81727-6402-40da-bc01-e80868ece81d",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "function asPlainText(value) {\n  if (value === null || value === undefined) return '';\n  const s = String(value).trim();\n  // Zero-width space al inicio (invisible) => Sheets no lo toma como fórmula\n  return '\\u200B' + s;\n}\n\nreturn items.map(item => {\n  // Lee de donde sea que venga:\n  const tel =\n    item.json?.body?.telefono ??\n    item.json?.telefono ??\n    $items(\"Webhook\")?.[0]?.json?.body?.telefono ??\n    '';\n\n  return {\n    json: {\n      ...item.json,\n      telefono_para_sheets: asPlainText(tel), // <-- en la raíz\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -176
+      ],
+      "id": "9747e0b2-b97c-41ce-ad29-f23934098c09",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Crypto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crypto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b303a66f-6474-4e63-93c3-565826be4e34",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2e95c17c4e4eb7ef8e3f100f5a33139d47b1d2f44be15aecad472b6995326913"
+  },
+  "id": "gK7EsPmmOUHZhSEG",
+  "tags": []
+}
