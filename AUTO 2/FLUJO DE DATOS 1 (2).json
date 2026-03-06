@@ -159,7 +159,10 @@
             "PRIORIDAD": "={{ $('Webhook').item.json.body.prioridad }}",
             "FECHA/HORA": "={{ $('Webhook').item.json.body['fecha/hora'] }}",
             "ASIGNADO": "={{ $('Webhook').item.json.body['asignado a'] }}",
-            "NOMBRE": "={{ $('Webhook').item.json.body.nombre }}"
+            "NOMBRE": "={{ $('Webhook').item.json.body.nombre }}",
+            "ESTADO": "={{ $json.estado }}",
+            "TIPO ERROR": "={{ $json.tipo_error }}",
+            "DETALLE ERROR": "={{ $json.detalle_error }}"
           },
           "matchingColumns": [
             "ID"
@@ -204,6 +207,36 @@
               "canBeUsedToMatch": true
             },
             {
+              "id": "ESTADO",
+              "displayName": "ESTADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TIPO ERROR",
+              "displayName": "TIPO ERROR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DETALLE ERROR",
+              "displayName": "DETALLE ERROR",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
               "id": "FECHA/HORA",
               "displayName": "FECHA/HORA",
               "required": false,
@@ -231,7 +264,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        784,
+        1024,
         112
       ],
       "id": "7bb8dc58-7f79-4166-892c-b794df2b1d09",
@@ -473,6 +506,19 @@
       ],
       "id": "9747e0b2-b97c-41ce-ad29-f23934098c09",
       "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "function isValidEmail(email) {\n  if (!email) return false;\n  const s = String(email).trim();\n  // Validación práctica (no perfecta, pero funciona para automatizaciones)\n  return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(s);\n}\n\nfunction detectErrorType(body) {\n  // Prioridad: campos obligatorios faltantes\n  if (!body) return { tipo: 'BODY_VACIO', detalle: 'No llegó body en el webhook.' };\n\n  const email = body.email ?? body.gmail ?? body.correo;\n  const telefono = body.telefono;\n  const nombre = body.nombre;\n  const empresa = body.empresa;\n\n  if (!email) return { tipo: 'EMAIL_FALTANTE', detalle: 'No llegó el campo email/correo.' };\n  if (!isValidEmail(email)) return { tipo: 'EMAIL_INVALIDO', detalle: `Email inválido: ${email}` };\n\n  // Opcional: detecta teléfono vacío\n  if (!telefono) return { tipo: 'TELEFONO_FALTANTE', detalle: 'No llegó el campo telefono.' };\n\n  // Si tu IF marca false por otra regla, deja genérico\n  return { tipo: 'REGLA_IF_FALSE', detalle: 'La condición del IF dio FALSE, pero no se detectó una causa específica.' };\n}\n\nreturn items.map(item => {\n  const body = item.json.body ?? item.json; // por si viene plano\n\n  const { tipo, detalle } = detectErrorType(body);\n\n  return {\n    json: {\n      ...item.json,\n      estado_envio: 'ERROR',\n      tipo_error: tipo,\n      detalle_error: detalle,\n\n      // útil para Sheets\n      email_detectado: body?.email ?? body?.correo ?? '',\n      telefono_detectado: body?.telefono ?? '',\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        112
+      ],
+      "id": "69adea76-9918-4804-82b3-8667901745c4",
+      "name": "Code in JavaScript1"
     }
   ],
   "pinData": {},
@@ -554,7 +600,7 @@
       "main": [
         [
           {
-            "node": "Append or update row in sheet",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -571,6 +617,17 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -579,7 +636,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "b303a66f-6474-4e63-93c3-565826be4e34",
+  "versionId": "90d34a4c-14dc-4616-8b24-262c62d6bd70",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2e95c17c4e4eb7ef8e3f100f5a33139d47b1d2f44be15aecad472b6995326913"
