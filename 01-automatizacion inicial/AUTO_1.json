@@ -1,0 +1,219 @@
+{
+  "name": "AUTO_1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2ea95433-9da1-4331-9513-4ac9d21e016e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        128
+      ],
+      "id": "4781699f-97d3-49a2-920a-980e1ce19174",
+      "name": "Webhook",
+      "webhookId": "2ea95433-9da1-4331-9513-4ac9d21e016e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8cac0c5f-1a21-47a8-89ff-1b5cae2694bc",
+              "leftValue": "={{ $json.body.email }}",
+              "rightValue": "^[a-zA-Z0-9_%.+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        128
+      ],
+      "id": "61083807-c382-46a1-8459-6bc21987298d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "={{ $json.body.mensaje }}",
+        "message": "=<!DOCTYPE html> <html lang=\"es\"> <head>     <meta charset=\"UTF-8\"> </head> <body style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #ffffff; margin: 0; padding: 20px;\">     <div style=\"max-width: 600px; margin: 0 auto; padding: 30px; border-left: 4px solid #2196F3;\">         <h2 style=\"color: #333333; margin-top: 0;\">Mensaje recibido</h2>         <div style=\"background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;\">             <p style=\"color: #555555; font-size: 15px; line-height: 1.8; margin: 0; white-space: pre-wrap;\">{{ $('Webhook').item.json.body.mensaje }}</p>         </div>         <p style=\"color: #999999; font-size: 12px; margin-top: 30px;\">             <strong>Fecha:</strong> {{ $now.toFormat('dd/MM/yyyy HH:mm') }}         </p>     </div> </body> </html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        48
+      ],
+      "id": "f5963bd2-7eb7-4c12-a880-b980fa44e855",
+      "name": "Send a message",
+      "webhookId": "c9759f40-91ce-4760-9a88-81527717da90",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "61ignWaxgvID2LZb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ep90Q9O0Ujpm76PgiHsx68n7Kwu4kRrp-qjipaG6lok",
+          "mode": "list",
+          "cachedResultName": "TRABAJO AUTO 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ep90Q9O0Ujpm76PgiHsx68n7Kwu4kRrp-qjipaG6lok/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ep90Q9O0Ujpm76PgiHsx68n7Kwu4kRrp-qjipaG6lok/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TIMESTAMP": "={{ $json.body.Timestamp }}",
+            "EMAIL INGRESADO": "={{ $json.body['Email Ingresado'] }}",
+            "MOTIVO": "={{ $json.body.Motivo }}",
+            "DATOS COMPLETOS": "={{ $json.body['Datos Completos'] }}",
+            "IP ORIGEN": "={{ $json.body['IP Origen'] }}"
+          },
+          "matchingColumns": [
+            "TIMESTAMP"
+          ],
+          "schema": [
+            {
+              "id": "TIMESTAMP",
+              "displayName": "TIMESTAMP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EMAIL INGRESADO",
+              "displayName": "EMAIL INGRESADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MOTIVO",
+              "displayName": "MOTIVO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATOS COMPLETOS",
+              "displayName": "DATOS COMPLETOS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IP ORIGEN",
+              "displayName": "IP ORIGEN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        48,
+        256
+      ],
+      "id": "255fec55-597b-4788-a6ed-1b56ffb8eb81",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "huGMi175XALmJYbi",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "cdba74b4-1bff-4782-9f76-47cb8d77dad4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2e95c17c4e4eb7ef8e3f100f5a33139d47b1d2f44be15aecad472b6995326913"
+  },
+  "id": "xGQuYvxY9gpVvLh7",
+  "tags": []
+}
